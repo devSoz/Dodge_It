@@ -2,11 +2,17 @@ package com.example.myapplication;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -27,23 +33,28 @@ public class customView extends View
 {
     private Canvas mCanvas;
     private Float xRunStart, yRunStart, ballSlope, xCanvas, yCanvas, xWall, yWall,yBottom;
-    private Float xDeltaWall = Float.valueOf(20), yDeltaWall = Float.valueOf(10);
-    private Boolean updateView=true;
+    private Float xDeltaWall = Float.valueOf(20), yDeltaWall = Float.valueOf(10), vX, vX2, vMid;
+    private Boolean updateView=false;
     private SoundPool soundPool;
     private RectF endRect;
-    private Integer interval = 40, score, flagClick = 0, flagUp=1, velocity=15;
+    private Integer interval = 40, score, flagClick = 0, flagUp=1, flagStart=0, velocity=25, secondsPassed=0;
     private Ball ballObj;
     private Integer cnt=0, flagGameOver = 0;
     private Wall wallObj, wallObj2;
+    private Drawable mCustomImage;
+    private Paint paint;
+
 
     private class UpdateViewRunnable implements Runnable {
         public void run()
         {
             //movePong();
             if(updateView) {
-                moveWall();
-                cnt++;
-                if(cnt>=20) cnt=0;
+
+                if(flagStart==1) {
+                    secondsPassed++;
+                    moveWall();
+                }
                 postDelayed(this, interval);
             }
         }
@@ -147,37 +158,45 @@ public class customView extends View
         mCanvas.drawColor(getResources().getColor(R.color.backgnd));
         //Paint paint = new Paint();
 
+        paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setAntiAlias(true);
         if(ballObj==null)
         {
             setDefault();
             ballObj = new Ball(xCanvas, yCanvas);
-            wallObj = new Wall(xCanvas, yCanvas);
-         //   wallObj2 = new Wall(xCanvas, yCanvas);
+            paint.setTextSize(50);
+            mCanvas.drawText(String.valueOf("Click to start"), xCanvas/3, yCanvas/2, paint);
         }
-
-        Paint paint = new Paint();
-        paint.setColor(Color.WHITE);
-        paint.setAntiAlias(true);
-        mCanvas.drawRect(wallObj.rWall, paint);
-
-
-        paint.setStyle(Paint.Style.FILL_AND_STROKE);
-        if(flagClick==1)
-        {
-            moveBall();
-            mCanvas.drawCircle(ballObj.x, ballObj.y, ballObj.radius, paint);
-        }
-        else {
-            if(wallObj.rWall.contains(ballObj.x+ballObj.radius, ballObj.y))
-            {
-                gameEnd();
+        if(flagStart==1) {
+            if (wallObj == null ) {
+                wallObj = new Wall(vX, vX + vMid);
+                wallObj2 = new Wall(vX2, vX2 + vMid);
+                //   wallObj2 = new Wall(xCanvas, yCanvas);
             }
-            mCanvas.drawCircle(ballObj.x, ballObj.y, ballObj.radius, paint);
+            mCanvas.drawRect(wallObj.rWall, paint);
+            mCanvas.drawRect(wallObj2.rWall, paint);
+            paint.setStyle(Paint.Style.FILL_AND_STROKE);
+            if(flagClick==1)
+            {
+                moveBall();
+                mCanvas.drawCircle(ballObj.x, ballObj.y, ballObj.radius, paint);
+            }
+            else {
+                if(wallObj.rWall.contains(ballObj.x+ballObj.radius, ballObj.y))
+                {
+                    gameEnd();
+                }
+                mCanvas.drawCircle(ballObj.x, ballObj.y, ballObj.radius, paint);
+            }
         }
+
         paint.setColor(getResources().getColor(R.color.foregnd));
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(20f);
         mCanvas.drawLine(0,yBottom+15,xCanvas,yBottom+15,paint);
+
+        //debugCanvas();
     }
 
     @Override
@@ -189,7 +208,9 @@ public class customView extends View
 
             case MotionEvent.ACTION_UP:
             {
-                flagClick = 1;
+                if(flagStart==1)
+                    flagClick = 1;
+                flagStart = 1;
                 break;
             }
         }
@@ -202,14 +223,13 @@ public class customView extends View
     public void moveBall()
     {
         //if(wallObj.rWall.contains((ballObj.x+ballObj.radius), (ballObj.y)+ballObj.radius))
-        if(ballHit())
+        if(ballHit(wallObj) || ballHit(wallObj2))
         {
             flagGameOver = 1;
             gameEnd();
             flagClick=0;
-
         }
-        if(ballObj.y<=(yCanvas/8))
+        if(ballObj.y<=3*(yCanvas/8))
         {
             flagUp=0;
         }
@@ -231,21 +251,74 @@ public class customView extends View
     {
         if(wallObj.rWall.right<0)
         {
-            //wallObj.rWall.top = yCanvas-500;
-            //  wallObj.rWall.bottom = wallObj.rWall.top + wallObj.height;
-            wallObj.rWall.left = xCanvas;
-            wallObj.rWall.right = wallObj.rWall.left + wallObj.width;
-            /* wallObj.rWall.top = yCanvas;
-            wallObj.rWall.left = 300;//3*(xCanvas/8);
-            wallObj.rWall.bottom = yCanvas + wallObj.height;
-            wallObj.rWall.right = wallObj.rWall.left + wallObj.width;*/
+            //wallObj.rWall.left = xCanvas;
+            //wallObj.rWall.right = wallObj.rWall.left + wallObj.width;
+            wallObj.resetWall();
         }
+
         else
         {
             wallObj.rWall.left-=xDeltaWall;
             wallObj.rWall.right-=xDeltaWall;
         }
+
+        if(wallObj2.rWall.right<0)
+        {
+            //wallObj2.rWall.left = xCanvas;
+            //wallObj2.rWall.right = wallObj.rWall.left + wallObj.width;
+            wallObj2.resetWall();
+        }
+        else
+        {
+            wallObj2.rWall.left-=xDeltaWall;
+            wallObj2.rWall.right-=xDeltaWall;
+        }
         invalidate();
+    }
+
+    public void setTimer()
+    {
+        paint.setColor(Color.WHITE);
+        paint.setTypeface(Typeface.create("Odyssey", Typeface.NORMAL));
+        int min = (int) (secondsPassed / 60);
+        int sec = (int) ((secondsPassed) % 60);
+        paint.setTextSize(60);
+     //   mCanvas.drawText(String.format ("%02d", min) + ":" + String.format ("%02d", sec), (xCanvas - 2 * board.tileSize+10), board.boardRect.top-25, paint2);
+    }
+
+    //SHow respective image based on if user lost or won, and explode the image
+    private void endGame()
+    {
+      /*  Rect rect = new Rect(Integer.valueOf((int) (board.boardRect.left+50)), Integer.valueOf((int) (board.boardRect.bottom+50)), Integer.valueOf((int) (xCanvas-50)), Integer.valueOf((int) (yCanvas-100)));
+        if((flagClickMine==1)) {
+            mCustomImage = getResources().getDrawable(R.drawable.oops);
+        }
+        else{
+            mCustomImage = getResources().getDrawable(R.drawable.congrats);
+        }
+
+        mCustomImage.setBounds(rect);
+        mCustomImage.draw(mcanvas);
+
+        if(flagEnd>=1){
+            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.oops);
+            RectF rectF = board.boardRect;
+            rectF.round(rect);
+            final ExplosionField explosionField = ExplosionField.attach2Window((Activity) getContext());
+            explosionField.explode(bm, rect, 200, 7000);
+        }
+        if(flagEnd==7) {
+            Intent intentCanva = new Intent((Activity) getContext(), MainActivity.class);
+            intentCanva.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            getContext().startActivity(intentCanva);
+        }*/
+    }
+
+    private void drawPic(Rect rect)
+    {
+       // mCustomImage = getResources().getDrawable(R.drawable.mine);
+      //  mCustomImage.setBounds(rect);
+       // mCustomImage.draw(mcanvas);
     }
 
     private class Ball
@@ -259,14 +332,12 @@ public class customView extends View
             this.radius = 30;
             this.x = xCanvas/10;
             this.y = yBottom-this.radius;
-            Paint paint = new Paint();
-            paint.setColor(getResources().getColor(R.color.foregnd));
-            mCanvas.drawCircle(this.x, this.y, this.radius, paint);
+          //  Paint paint = new Paint();
+           // paint.setColor(getResources().getColor(R.color.foregnd));
+          //  mCanvas.drawCircle(this.x, this.y, this.radius, paint);
         }
 
-        public void ballHit() {
 
-        }
     }
 
     private class Wall
@@ -274,22 +345,36 @@ public class customView extends View
         Integer width;
         Integer height;
         RectF rWall;
-        Float xWall, yWall;
+        Float x1, x2;
 
-        public Wall(Float xCanvas, Float yCanvas)
+        public Wall(Float x1, Float x2)
         {
             this.height = 200;
             this.width = 50;
-
+            this.x1 = x1;
+            this.x2 = x2;
             rWall = new RectF();
+            resetWall();
+            /*
             rWall.top = yBottom-this.height;
             rWall.bottom = rWall.top + this.height;
             rWall.left = xCanvas;
-            rWall.right = rWall.left + this.width;
+            rWall.right = rWall.left + this.width;*/
 
             Paint paint = new Paint();
             paint.setColor(Color.WHITE);
             mCanvas.drawRect(rWall, paint);
+        }
+
+        public void resetWall()
+        {
+            Random random = new Random();
+            rWall.left = random.nextInt((int)(this.x2 - this.x1))+this.x1;
+            this.width = random.nextInt (150 - 50)+50;
+            Log.d("debug random", String.valueOf(rWall.left)+ ", "+this.x1+", "+this.x2);
+            rWall.right = rWall.left + this.width;
+            rWall.top = yBottom-this.height;
+            rWall.bottom = rWall.top + this.height;
         }
     }
 
@@ -297,6 +382,9 @@ public class customView extends View
     {
         xCanvas = Float.valueOf(mCanvas.getWidth());
         yCanvas = Float.valueOf(mCanvas.getHeight());
+        vX = xCanvas;
+        vX2 = 3*(xCanvas/2);//7*(xCanvas/4);
+        vMid = Float.valueOf(400);
         yBottom = yCanvas-(yCanvas/8);
         mCanvas.drawColor(getResources().getColor(R.color.backgnd));
 
@@ -306,7 +394,7 @@ public class customView extends View
         //xRandomStart = random.nextInt((int) (xCanvas*0.9+1)-10);
     }
 
-    private Boolean ballHit()
+    private Boolean ballHit(Wall wall)
     {
         Float cX = Math.abs(ballObj.x - wallObj.rWall.left);
         Float cY = Math.abs(ballObj.y - wallObj.rWall.top);
@@ -333,11 +421,12 @@ public class customView extends View
     public void debugCanvas()
     {
         Paint paint = new Paint();
-        paint.setColor(Color.BLACK);
+        paint.setColor(Color.WHITE);
         paint.setTextSize(50);
-      //  mCanvas.drawText(String.valueOf(yRandom), 200, 200, paint);
-        //mcanvas.drawText(String.valueOf(yCanvas), 100, 300, paint);
-        //Log.d("debug", String.valueOf(xRunStart) + "," +String.valueOf(yRunStart) + " delta" +String.valueOf(xDelta) + "," + String.valueOf(yDelta)  );
+        mCanvas.drawText(String.valueOf(wallObj.rWall.left), 200, 200, paint);
+        mCanvas.drawText(String.valueOf(wallObj2.rWall.left), 100, 300, paint);
+
+        Log.d("debug", String.valueOf(wallObj.rWall.left) + " ," +String.valueOf(wallObj2.rWall.left));
 
         //mcanvas.drawText(String.valueOf(xRunStart), 100, 100, paint);
         //mcanvas.drawText(String.valueOf(yRunStart), 200, 100, paint);
