@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
@@ -14,6 +15,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -31,7 +33,7 @@ public class customView extends View
     private RectF endRect;
     private Integer interval = 40, score, flagClick = 0, flagUp=1, velocity=15;
     private Ball ballObj;
-    private Integer cnt=0;
+    private Integer cnt=0, flagGameOver = 0;
     private Wall wallObj, wallObj2;
 
     private class UpdateViewRunnable implements Runnable {
@@ -166,6 +168,10 @@ public class customView extends View
             mCanvas.drawCircle(ballObj.x, ballObj.y, ballObj.radius, paint);
         }
         else {
+            if(wallObj.rWall.contains(ballObj.x+ballObj.radius, ballObj.y))
+            {
+                gameEnd();
+            }
             mCanvas.drawCircle(ballObj.x, ballObj.y, ballObj.radius, paint);
         }
         paint.setColor(getResources().getColor(R.color.foregnd));
@@ -195,8 +201,14 @@ public class customView extends View
 
     public void moveBall()
     {
-        if(wallObj.rWall.contains((ballObj.x+ballObj.radius), (ballObj.y)+ballObj.radius))
+        //if(wallObj.rWall.contains((ballObj.x+ballObj.radius), (ballObj.y)+ballObj.radius))
+        if(ballHit())
+        {
+            flagGameOver = 1;
+            gameEnd();
+            flagClick=0;
 
+        }
         if(ballObj.y<=(yCanvas/8))
         {
             flagUp=0;
@@ -220,10 +232,10 @@ public class customView extends View
         if(wallObj.rWall.right<0)
         {
             //wallObj.rWall.top = yCanvas-500;
-          //  wallObj.rWall.bottom = wallObj.rWall.top + wallObj.height;
+            //  wallObj.rWall.bottom = wallObj.rWall.top + wallObj.height;
             wallObj.rWall.left = xCanvas;
             wallObj.rWall.right = wallObj.rWall.left + wallObj.width;
-           /* wallObj.rWall.top = yCanvas;
+            /* wallObj.rWall.top = yCanvas;
             wallObj.rWall.left = 300;//3*(xCanvas/8);
             wallObj.rWall.bottom = yCanvas + wallObj.height;
             wallObj.rWall.right = wallObj.rWall.left + wallObj.width;*/
@@ -294,7 +306,7 @@ public class customView extends View
         //xRandomStart = random.nextInt((int) (xCanvas*0.9+1)-10);
     }
 
-    Boolean intersects()
+    private Boolean ballHit()
     {
         Float cX = Math.abs(ballObj.x - wallObj.rWall.left);
         Float cY = Math.abs(ballObj.y - wallObj.rWall.top);
@@ -302,13 +314,20 @@ public class customView extends View
         if (cX > (wallObj.width/2 + ballObj.radius)) { return false; }
         if (cY > (wallObj.height/2 + ballObj.radius)) { return false; }
 
-        if (cX <= (rect.width/2)) { return true; }
-        if (cY <= (rect.height/2)) { return true; }
+        if (cX <= (wallObj.width/2)) { return true; }
+        if (cY <= (wallObj.height/2)) { return true; }
 
-        cornerDistance_sq = (circleDistance.x - rect.width/2)^2 +
-                (circleDistance.y - rect.height/2)^2;
+        double distance = Math.pow((cX-wallObj.width/2),2) + Math.pow((cY-wallObj.height/2), 2);
+        if(wallObj.rWall.contains(ballObj.x+ballObj.radius, ballObj.y))
+            return true;
+        return (distance <= (Math.pow(ballObj.radius, 2)));
+    }
 
-        return (cornerDistance_sq <= (circle.r^2));
+    public void gameEnd()
+    {
+        Toast toast;
+        toast = Toast.makeText(getContext(), "Chumo ball hit:", Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     public void debugCanvas()
