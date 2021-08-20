@@ -24,17 +24,21 @@ import static android.content.Context.MODE_PRIVATE;
 public class customView extends View
 {
     private Canvas mCanvas;
-    public Float xRunStart, yRunStart, ballSlope, xCanvas, yCanvas;
+    public Float xRunStart, yRunStart, ballSlope, xCanvas, yCanvas, xWall, yWall;
+    public Float xDeltaWall = Float.valueOf(10), yDeltaWall = Float.valueOf(10);
     public Boolean updateView=true;
     private SoundPool soundPool;
     private RectF endRect;
-    public Integer interval;
+    public Integer interval = 30, score;
+    public Ball ballObj;
+    public Wall wallObj;
 
     private class UpdateViewRunnable implements Runnable {
         public void run()
         {
             //movePong();
             if(updateView) {
+                moveWall();
                 postDelayed(this, interval);
             }
         }
@@ -131,148 +135,136 @@ public class customView extends View
     }*/
 
     @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+        mCanvas = canvas;
+        mCanvas.drawColor(getResources().getColor(R.color.backgnd));
+        //Paint paint = new Paint();
+
+        if(ballObj==null)
+        {
+            setDefault();
+            ballObj = new Ball(xCanvas, yCanvas);
+            wallObj = new Wall(xCanvas, yCanvas);
+        }
+
+        Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+        paint.setAntiAlias(true);
+        mCanvas.drawRect(wallObj.rWall, paint);
+        //mCanvas.drawLine(0,);
+
+        //mCanvas.drawRect(10, 10, 100, 100, paint);
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent event)
     {
-
-        xSlider= event.getX();
-        ySlider = event.getY();
+        xWall= event.getX();
+        yWall = event.getY();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
-                flagBall = 1;
 
-                if (sliderObj.slider.contains(xSlider, ySlider)) {
-                    flagSliderMove = 1;
-                    //Log.d("test","down");
-                    sliderObj.setSliderPos(xSlider);
-                }
+
                 break;
             }
 
             case MotionEvent.ACTION_MOVE:
             {
-                if (flagSliderMove == 1) {
-                    sliderObj.setSliderPos(xSlider);
-                }
+
                 break;
             }
 
             case MotionEvent.ACTION_UP:
             {
-                flagSliderMove = 0;
-                // Log.d("test","up");
-                break;
+                 break;
             }
         }
-        if(flagSliderMove==1)
-        {
+
             postInvalidate();
-        }
+
         return true;
     }
 
+    private void moveWall()
+    {
+        if(wallObj.rWall.right<0)
+        {
+            wallObj.rWall.top = yCanvas-500;
+            wallObj.rWall.bottom = wallObj.rWall.top + wallObj.height;
+            wallObj.rWall.left = xCanvas;
+            wallObj.rWall.right = wallObj.rWall.left + wallObj.width;
+           /* wallObj.rWall.top = yCanvas;
+            wallObj.rWall.left = 300;//3*(xCanvas/8);
+            wallObj.rWall.bottom = yCanvas + wallObj.height;
+            wallObj.rWall.right = wallObj.rWall.left + wallObj.width;*/
+        }
+        else
+        {
+            wallObj.rWall.left-=xDeltaWall;
+            wallObj.rWall.right-=xDeltaWall;
+        }
+        invalidate();
+    }
 
-    private class ball
+    private class Ball
     {
         Float x;
         Float y;
         Integer radius;
 
-        public ball()
+        public Ball(Float xCanvas, Float yCanvas)
         {
             this.radius = 20;
             Paint paint = new Paint();
             paint.setColor(getResources().getColor(R.color.foregnd));
-            mCanvas.drawCircle(300, 100, this.radius, paint);
+            mCanvas.drawCircle(3*(xCanvas/8), xCanvas/8, this.radius, paint);
         }
 
         public void moveBall()
         {
-            
+
         }
         public void ballHit() {
-            xRunStart = xRunStart + xDelta * ballSlope;
-            yRunStart = yRunStart + yDelta;
-            //Log.d("test","inside hit");
+
         }
     }
 
-    private class cSlider
+    private class Wall
     {
         Integer width;
         Integer height;
-        RectF cSlider;
+        RectF rWall;
+        Float xWall, yWall;
 
-        public cSlider(Float canvasHeight)
+        public Wall(Float xCanvas, Float yCanvas)
         {
-            this.width = 200;
-            this.height = 50;
+            this.height = 200;
+            this.width = 50;
 
-            cSlider = new RectF();
-            cSlider.top = 0;
-            cSlider.left = xCanvas/2-width/2;
-            cSlider.bottom = height;
-            cSlider.right = cSlider.left+width;
+            rWall = new RectF();
+            rWall.top = yCanvas-500;
+            rWall.bottom = rWall.top + this.height;
+            rWall.left = xCanvas;
+            rWall.right = rWall.left + this.width;
 
             Paint paint = new Paint();
             paint.setColor(Color.WHITE);
-            mcanvas.drawRect(cSlider, paint);
+            mCanvas.drawRect(rWall, paint);
         }
-
-        public void setcSliderPos()
-        {
-            if((flagFirstTopHit==0)&&(mode==1))
-            {
-                xcSlider= (float) (xDelta*0.2)*canvasSide;
-            }
-            else
-            {    xcSlider = (float) (xDelta);  }
-
-            if((cSlider.right>=xCanvas)&&(xcSlider>0.0)) {
-                Log.d("Right", String.valueOf(cSlider.right) + "," +String.valueOf(xDelta));
-            }
-            else if((cSlider.left<=0.0)&&(xcSlider<0.0)){
-                Log.d("Left", String.valueOf(cSlider.left) + "," +String.valueOf(xDelta));
-            }
-
-
-            else {
-                if((mode==2)&&(level==3))
-                {
-                    cSlider.left = xRunStart-(cSliderObj.width/2);
-                    cSlider.right = xRunStart+(cSliderObj.width/2);
-                }
-                else {
-                    Log.d("else", String.valueOf(cSlider.left) + "," + String.valueOf(xcSlider) + "," + String.valueOf((cSlider.left <= 0.0) && (xDelta < 0.0)));
-                    cSlider.left += xcSlider;
-                    cSlider.right += xcSlider;
-                }
-            }
-        }
-
     }
-
 
     public void setDefault()
     {
         xCanvas = Float.valueOf(mCanvas.getWidth());
         yCanvas = Float.valueOf(mCanvas.getHeight());
-        mcanvas.drawColor(getResources().getColor(R.color.backgnd));
+        mCanvas.drawColor(getResources().getColor(R.color.backgnd));
 
-        xRunStart = xCanvas/2;
-        yRunStart = yCanvas/2;
+        //xRunStart = xCanvas/2;
+        //yRunStart = yCanvas/2;
         Random random = new Random();
-        xRandomStart = random.nextInt((int) (xCanvas*0.9+1)-10);
-        if(xRandomStart<xRunStart)
-        {
-            xRandomStart = xRunStart-xRandomStart;
-            canvasSide=-1;
-        }
-        else
-        {
-            xRandomStart = xRandomStart-xRunStart;
-            canvasSide=1;
-        }
-        ballSlope = (xRandomStart)/yRunStart;
+        //xRandomStart = random.nextInt((int) (xCanvas*0.9+1)-10);
     }
 
     public void debugCanvas()
@@ -293,7 +285,8 @@ public class customView extends View
 
     //stores the highest score in shared preferences to show in main screen
     //This function is called when the balls misses
-    private void storeScore() {
+    private void storeScore()
+    {
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("MySharedPref", MODE_PRIVATE);
         Integer highScore;
         highScore = Integer.parseInt(sharedPreferences.getString("highScore", "0"));
