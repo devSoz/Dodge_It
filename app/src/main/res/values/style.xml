@@ -30,13 +30,16 @@
 
     <!-- Custom Style defined for the buttons. -->
     <style name="CustomButtonStyle">
-        <item name="android:layout_width">110dp</item>
+
         <item name="android:textSize">18dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginLeft">20dp</item>
+        <item name="android:layout_marginRight">20dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@color/btn</item>
+        <item name="android:background">@drawable/buttonvector</item>
     </style>
     <style name="titletxt1">
-        <item name="android:textSize">18dp</item>
+        <item name="android:textSize">16dp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_marginTop">2dp</item>
         <item name="android:layout_marginBottom">2dp</item>
@@ -46,7 +49,7 @@
         <item name="android:textColor">@color/black</item>
     </style>
     <style name="titletxt2">
-        <item name="android:textSize">18dp</item>
+        <item name="android:textSize">16dp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_marginTop">2dp</item>
         <item name="android:layout_marginBottom">2dp</item>
@@ -54,6 +57,16 @@
         <item name="android:layout_marginRight">5dp</item>
         <item name="android:background">@drawable/rectround2</item>
         <item name="android:textColor">@color/black</item>
+    </style>
+    <style name="titletxt3">
+        <item name="android:textSize">22dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">@font/seaweed</item>
+        <item name="android:layout_marginTop">2dp</item>
+        <item name="android:layout_marginBottom">2dp</item>
+        <item name="android:layout_marginLeft">5dp</item>
+        <item name="android:layout_marginRight">5dp</item>
+         <item name="android:textColor">@color/black</item>
     </style>
     <style name="footertxt">
         <item name="android:textSize">15dp</item>
@@ -72,9 +85,9 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/black</item>
     </style>
-    <style name="rbText">
+    <style name="txtMain">
         <item name="android:textSize">30dp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/txtClr</item>
+        <item name="android:textColor">@color/maintheme</item>
     </style>
 </resources>

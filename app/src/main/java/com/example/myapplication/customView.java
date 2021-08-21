@@ -66,7 +66,8 @@ public class customView extends View
                     //secondsPassed++;
                     //if(flagEnd==0) {
                         timerCount++;
-                        moveWall();
+                        if(ballObj != null)
+                            moveWall();
                     //}
 
                 }
@@ -325,6 +326,7 @@ public class customView extends View
             intentCanva.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
             getContext().startActivity(intentCanva);
+            ((Activity) getContext()).finish();
         }
     }
 
@@ -483,12 +485,14 @@ public class customView extends View
     public void gameEnd()
     {
         playSound(1);
-       // flagEnd=1;
+        flagEnd=1;
         storeScore();
        // explode Game();
-       // Toast toast;
-       // toast = Toast.makeText(getContext(), "Chumo ball hit:", Toast.LENGTH_SHORT);
-       // toast.show();
+        Intent intentCanva = new Intent(getContext(), Canva.class);
+        //intentCanva.putExtra("level", level);
+        //intentCanva.putExtra("mode", mode);
+        getContext().startActivity(intentCanva);
+
     }
 
     public void debugCanvas()
@@ -512,23 +516,28 @@ public class customView extends View
     //This function is called when the balls hits the wall
     private void storeScore()
     {
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("MySharedPref", MODE_PRIVATE);
-        Float highScore;
+        if(flagEnd!=3) {
+            SharedPreferences sharedPreferences = getContext().getSharedPreferences("MySharedPref", MODE_PRIVATE);
+            Float highScore;
 
-        List<Float> scoreList = new ArrayList<Float>();
-        for(int i=0; i<5; i++)
-        {
-            highScore = Float.parseFloat(sharedPreferences.getString("Score" + String.valueOf(i), "0"));
-            scoreList.add(highScore);
+            List<Float> scoreList = new ArrayList<Float>();
+            for (int i = 1; i <= 5; i++) {
+                highScore = Float.parseFloat(sharedPreferences.getString("Score" + String.valueOf(i), "0"));
+                scoreList.add(highScore);
+
+            }
+            score = secondsPassed / 10f;
+            scoreList.add(score);
+            Collections.sort(scoreList);
+
+            SharedPreferences.Editor myEdit = sharedPreferences.edit();
+            for (int i = 5; i >= 1; i--) {
+                myEdit.putString("Score" + String.valueOf(i), String.valueOf(scoreList.get(i)));
+                Log.d("Canvas", "from canvas " + scoreList.get(i));
+            }
+            myEdit.commit();
+            flagEnd=3;
         }
-        score = secondsPassed/10f;
-        scoreList.add(score);
-        Collections.sort(scoreList);
-
-        SharedPreferences.Editor myEdit = sharedPreferences.edit();
-        for(int i=5; i>=1; i--)
-            myEdit.putString("Score" +String.valueOf(i) , String.valueOf(scoreList.get(i)));
-        myEdit.commit();
     }
 
     public void speedReset()

@@ -50,7 +50,7 @@ public class Canva extends AppCompatActivity
     @Override
     protected void onStop() {
         super.onStop();
-        Intent intent = new Intent(this,MainActivity.class);// New activity
+        Intent intent = new Intent(this,MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         this.startActivity(intent);
     }

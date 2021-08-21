@@ -19,68 +19,57 @@
             android:orientation="horizontal"       >
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:layout_margin="20dp"
                     android:gravity="start"
                     android:background="@color/backgnd"
                     android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/textView1"
-                        style="@style/titletxt1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:text="High Score: " />
 
                     <ImageView
                         android:id="@+id/imageView2"
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_gravity="center"
-                        android:layout_marginTop="1dp"
+                        android:layout_marginTop="20dp"
                         app:srcCompat="@drawable/pong" />
                     <Button
+                        android:id="@+id/btnnew"
                         style="@style/CustomButtonStyle"
-                        android:id="@+id/btnNew"
-                        android:layout_marginBottom="15dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="New Game" />
 
                     <Button
-                        android:layout_marginBottom="15dp"
+
                         style="@style/CustomButtonStyle"
-                        android:id="@+id/btnhelp"
+                         android:id="@+id/btnhelp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Help" />
                   <Switch
-                      android:layout_width="match_parent"
-                      android:layout_height="match_parent"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
                     android:id="@+id/switch1"
+                      android:layout_gravity="center"
+                      android:layout_margin="20dp"
+
                       style="@style/titletxt1"
                       android:text="Volume">
 
                   </Switch>
 
 
-                    <Button
-                        style="@style/CustomButtonStyle"
-                        android:id="@+id/btnsetting"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Settings" />
 
                 </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_marginLeft="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="50dp"
             android:background="@color/backgnd"
             android:layout_weight="1" >
             <LinearLayout
@@ -92,47 +81,47 @@
                 android:layout_weight="1" >
             <TextView
                 android:id="@+id/txtScore"
-                style="@style/titletxt1"
-                android:layout_width="wrap_content"
+                style="@style/titletxt3"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginEnd="10dp"
-                android:text="High Score " />
+                android:gravity="center"
+                android:text="Leader board" />
             <TextView
                 android:id="@+id/txtScore1"
                 style="@style/titletxt1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 
-                android:text="High Score: " />
+                android:text="" />
             <TextView
                 android:id="@+id/txtScore2"
                 style="@style/titletxt2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                   android:text="High Score: " />
+                   android:text="" />
             <TextView
                 android:id="@+id/txtScore3"
                 style="@style/titletxt1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 
-                android:text="High Score: " />
+                android:text="" />
             <TextView
                 android:id="@+id/txtScore4"
                 style="@style/titletxt2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 
-                android:text="High Score: " />
-            <TextView
-                android:id="@+id/txtScore5"
-                style="@style/titletxt1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:text="High Score: " />
+                android:text="" />
+                <TextView
+                    android:id="@+id/txtScore5"
+                    style="@style/titletxt1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:text="" />
             </LinearLayout>
         </LinearLayout>
         </LinearLayout>
