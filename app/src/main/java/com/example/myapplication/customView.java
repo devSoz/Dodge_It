@@ -45,7 +45,7 @@ public class customView extends View
     private RectF endRect;
     private Integer interval = 25, flagClick = 0, flagUp=1, flagStart=0, velocity=35, secondsPassed=0;
     private Ball ballObj;
-    private Integer cnt=0,endSound, flagGameOver = 0, flagSpeedReset=0, timerCount=0, flagEnd=0;
+    private Integer cnt=0,endSound, flagGameOver = 0, flagSpeedReset=0, timerCount=0, flagEnd=0, flagVolume = 0;
     private int min, sec;
     private Wall wallObj, wallObj2;
     private Drawable mCustomImage;
@@ -56,12 +56,13 @@ public class customView extends View
         public void run()
         {
             //
-            //if(flagEnd>0) {
+           // if(flagEnd>0) {
              //   flagEnd++;
                // explodeGame();
-
             //}
-            if(updateView) {
+
+
+                        if(updateView) {
                 if(flagStart==1) {
                     //secondsPassed++;
                     if(flagEnd==0) {
@@ -326,8 +327,8 @@ public class customView extends View
             Intent intentCanva = new Intent((Activity) getContext(), MainActivity.class);
             intentCanva.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-            //getContext().startActivity(intentCanva);
-            ((Activity) getContext()).finish();
+            getContext().startActivity(intentCanva);
+            //((Activity) getContext()).finish();
         }
     }
 
@@ -455,7 +456,7 @@ public class customView extends View
         vMid = Float.valueOf(600); //Float.valueOf(xCanvas/5);
         yBottom = yCanvas-(yCanvas/4);
         mCanvas.drawColor(getResources().getColor(R.color.backgnd));
-
+        flagVolume = ((Activity)getContext()).getIntent().getIntExtra("volume", 0);
 
         //xRunStart = xCanvas/2;
         //yRunStart = yCanvas/2;
@@ -485,10 +486,11 @@ public class customView extends View
 
     public void gameEnd()
     {
-        playSound(1);
+        if(flagVolume==1)
+        {   playSound(1);   }
         flagEnd=1;
         storeScore();
-       // explode Game();
+    //   explodeGame();
         Intent intentCanva = new Intent((Activity) getContext(), MainActivity.class);
         intentCanva.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         ((Activity) getContext()).finish();

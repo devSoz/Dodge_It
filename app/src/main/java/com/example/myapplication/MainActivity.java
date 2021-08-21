@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        aSwitch = (Switch) findViewById(R.id.switch1);
+
         setContentView(R.layout.activity_main);
         clickListener();
 
@@ -103,11 +103,15 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                //getLevel();
-                int temp=0;
+                aSwitch = (Switch) findViewById(R.id.switch1);
+                Integer temp;
+                if(aSwitch.isChecked())
+                {    temp=1;    }
+                else
+                    temp=0;
                 Intent intentCanva = new Intent(MainActivity.this, Canva.class);
+                intentCanva.putExtra("volume", temp);
                 finish();
-                //intentCanva.putExtra("mode", mode);
                 startActivity(intentCanva);
 
             }
