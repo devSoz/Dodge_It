@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/rel12"
     android:layout_height="match_parent"
     android:background="@color/backgnd"
     >
@@ -11,181 +12,163 @@
         android:layout_height="match_parent"
         android:background="@color/backgnd"
         android:orientation="vertical"       >
-    <LinearLayout
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:background="@color/backgnd"
-        android:orientation="vertical"
-        >
-
-
-
-        <TextView
-            android:id="@+id/textView1"
-            style="@style/titletxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-
-            android:layout_marginEnd="10dp"
-
-            android:text="High Score: "
-  />
-
-        <TextView
-            android:id="@+id/txtScore1"
-            style="@style/titletxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="24dp"
-            android:text="xxx"
-            android:textAlignment="viewStart"
-/>
-        <TextView
-            android:id="@+id/txtScore2"
-            style="@style/titletxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="24dp"
-            android:text="xxx"
-            android:textAlignment="viewStart"/>
-        <TextView
-            android:id="@+id/txtScore3"
-            style="@style/titletxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="24dp"
-            android:text="xxx"
-            android:textAlignment="viewStart"/>
-        <TextView
-            android:id="@+id/txtScore4"
-            style="@style/titletxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="24dp"
-            android:text="xxx"
-            android:textAlignment="viewStart" />
-        <TextView
-            android:id="@+id/txtScore5"
-            style="@style/titletxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="24dp"
-            android:text="xxx"
-            android:textAlignment="viewStart" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <ImageButton
-            android:id="@+id/btnHelp"
-
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:background="#545050"
-            android:backgroundTint="#403A3A"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/info" />
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="188dp"
-            android:layout_height="166dp"
-            android:layout_gravity="center"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="0dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnHelp"
-            app:srcCompat="@drawable/pong" />
-
-        <ImageButton
-            android:id="@+id/btn1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            android:layout_marginTop="28dp"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:background="@color/backgnd"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.623"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rg2"
-            app:srcCompat="@drawable/startbtn" />
+            android:orientation="horizontal"       >
 
-        <TextView
-            android:id="@+id/textView"
-            style="@style/footertxt"
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="start"
+                    android:background="@color/backgnd"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView1"
+                        style="@style/titletxt1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:text="High Score: " />
+
+                    <ImageView
+                        android:id="@+id/imageView2"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="1dp"
+                        app:srcCompat="@drawable/pong" />
+                    <Button
+                        style="@style/CustomButtonStyle"
+                        android:id="@+id/btnNew"
+                        android:layout_marginBottom="15dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="New Game" />
+
+                    <Button
+                        android:layout_marginBottom="15dp"
+                        style="@style/CustomButtonStyle"
+                        android:id="@+id/btnhelp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Help" />
+                  <Switch
+                      android:layout_width="match_parent"
+                      android:layout_height="match_parent"
+                    android:id="@+id/switch1"
+                      style="@style/titletxt1"
+                      android:text="Volume">
+
+                  </Switch>
+
+
+                    <Button
+                        style="@style/CustomButtonStyle"
+                        android:id="@+id/btnsetting"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Settings" />
+
+                </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="48dp"
-            android:layout_marginTop="4dp"
-            android:text="Made by Dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView2" />
-
-        <RadioGroup
-            android:id="@+id/rg1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:checkedButton="@id/rb1"
-            app:layout_constraintStart_toEndOf="@+id/imageView2"
-            app:layout_constraintTop_toTopOf="@+id/imageView2">
-
-            <RadioButton
-                android:id="@+id/rb1"
-                style="@style/rbText"
+            android:orientation="vertical"
+            android:layout_marginLeft="50dp"
+            android:background="@color/backgnd"
+            android:layout_weight="1" >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_marginLeft="50dp"
+                android:background="@drawable/rectround1"
+                android:layout_weight="1" >
+            <TextView
+                android:id="@+id/txtScore"
+                style="@style/titletxt1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:text="High Score " />
+            <TextView
+                android:id="@+id/txtScore1"
+                style="@style/titletxt1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="One Player" />
 
-            <RadioButton
-                android:id="@+id/rb2"
-                style="@style/rbText"
+                android:text="High Score: " />
+            <TextView
+                android:id="@+id/txtScore2"
+                style="@style/titletxt2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Com Vs Player"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-        </RadioGroup>
-
-        <RadioGroup
-            android:id="@+id/rg2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:checkedButton="@id/rbmode1"
-            app:layout_constraintStart_toEndOf="@+id/rg1"
-            app:layout_constraintTop_toTopOf="@+id/imageView2">
-
-            <RadioButton
-                android:id="@+id/rbmode1"
-                style="@style/rbText"
+                   android:text="High Score: " />
+            <TextView
+                android:id="@+id/txtScore3"
+                style="@style/titletxt1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Easy" />
 
-            <RadioButton
-                android:id="@+id/rbmode3"
-                style="@style/rbText"
+                android:text="High Score: " />
+            <TextView
+                android:id="@+id/txtScore4"
+                style="@style/titletxt2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Hard"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
 
-        </RadioGroup>
+                android:text="High Score: " />
+            <TextView
+                android:id="@+id/txtScore5"
+                style="@style/titletxt1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:text="High Score: " />
+            </LinearLayout>
+        </LinearLayout>
+        </LinearLayout>
+                 <LinearLayout
+                    android:id="@+id/rglinear"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/backgnd"
+                    android:paddingTop="5dp"
+                    android:gravity="top"
+                    android:orientation="vertical"
+                    android:visibility="visible">
 
 
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:layout_weight="3"
+                    >
+
+                    <TextView
+                        android:id="@+id/textView"
+                        style="@style/footertxt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="0dp"
+                        android:text="Made by Dp"
+                        android:textAlignment="center" />
+
+                </LinearLayout>
+
+            </LinearLayout>
 
     </LinearLayout>
-    </LinearLayout>
+
 </ScrollView>

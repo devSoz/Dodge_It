@@ -31,19 +31,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import tyrantgit.explosionfield.ExplosionField;
+
 import static android.content.Context.MODE_PRIVATE;
 
 public class customView extends View
 {
     private Canvas mCanvas;
-    private Float xCanvas, yCanvas, xWall, yWall,yBottom, speedWall;
+    private Float xCanvas, yCanvas, xWall, yWall,yBottom, speedWall, score;
     private Float xDeltaWall = Float.valueOf(20), yDeltaWall = Float.valueOf(10), vX, vX2, vMid;
     private Boolean updateView=false;
     private SoundPool soundPool;
     private RectF endRect;
-    private Integer interval = 25, score, flagClick = 0, flagUp=1, flagStart=0, velocity=35, secondsPassed=0;
+    private Integer interval = 25, flagClick = 0, flagUp=1, flagStart=0, velocity=35, secondsPassed=0;
     private Ball ballObj;
-    private Integer cnt=0, flagGameOver = 0, flagSpeedReset=0, timerCount=0;
+    private Integer cnt=0,endSound, flagGameOver = 0, flagSpeedReset=0, timerCount=0, flagEnd=0;
     private int min, sec;
     private Wall wallObj, wallObj2;
     private Drawable mCustomImage;
@@ -53,14 +55,19 @@ public class customView extends View
     private class UpdateViewRunnable implements Runnable {
         public void run()
         {
-            //movePong();
-            if(updateView) {
+            //
+            //if(flagEnd>0) {
+                flagEnd++;
+               // explodeGame();
 
+            //}
+            if(updateView) {
                 if(flagStart==1) {
                     //secondsPassed++;
-                    timerCount++;
-                    moveWall();
-                    //if(timerCount%40==0)
+                    //if(flagEnd==0) {
+                        timerCount++;
+                        moveWall();
+                    //}
 
                 }
                 postDelayed(this, interval);
@@ -134,29 +141,19 @@ public class customView extends View
 
 
         //beep sound for hit and game over
-       /* gameOver= soundPool.load(context, R.raw.beep2,1);
-        wallHit= soundPool.load(context, R.raw.beep4,1);
-        sliderHit= soundPool.load(context, R.raw.beep4,1);*/
+        endSound = soundPool.load(context, R.raw.beep2,1);
+
 
 
     }
 
     //play different sound based on the action
-   /* public void playSound(int i)
+    public void playSound(int i)
     {
-        switch (i) {
 
-            case 1:
-                soundPool.play(gameOver, 1, 1, 0, 0, 1);
-                break;
-            case 2:
-                soundPool.play(wallHit, 1, 1, 0, 0, 1);
-                break;
-            case 3:
-                soundPool.play(sliderHit, 1, 1, 0, 0, 1);
-                break;
-        }
-    }*/
+                soundPool.play(endSound, 1, 1, 0, 0, 1);
+
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -176,8 +173,9 @@ public class customView extends View
             setDefault();
             ballObj = new Ball(xCanvas, yCanvas);
             paintLine.setColor(getResources().getColor(R.color.clrGameLine));
-            paintLine.setTextSize(50);
-            mCanvas.drawText(String.valueOf("Click to start"), xCanvas/3, yCanvas/2, paintLine);
+            paintLine.setTextSize(70);
+            paintLine.setTypeface(Typeface.create("Odyssey", Typeface.NORMAL));
+            mCanvas.drawText(String.valueOf("Click any key to start!"), xCanvas/3, yCanvas/3, paintLine);
         }
 
         if(secondsPassed%5==0)
@@ -211,7 +209,7 @@ public class customView extends View
             paintLine.setStyle(Paint.Style.STROKE);
             paintLine.setStrokeWidth(5f);
             setTimer();
-            mCanvas.drawText(String.format ("%02d", min) + ":" + String.format ("%02d", sec) + "      Score : " +String.format("%.1f", secondsPassed*0.1) , (xCanvas - xCanvas/2), 50, paintLine);
+            mCanvas.drawText(String.format ("%02d", min) + ":" + String.format ("%02d", sec) + "      Score : " +String.format("%.1f", secondsPassed*0.1) , (xCanvas - xCanvas/3.0f), 50, paintLine);
         }
 
         paintLine.setColor(getResources().getColor(R.color.clrGameLine));
@@ -231,9 +229,11 @@ public class customView extends View
 
             case MotionEvent.ACTION_UP:
             {
-                if(flagStart==1)
-                    flagClick = 1;
-                flagStart = 1;
+                //if(flagEnd==0) {
+                    if (flagStart == 1)
+                        flagClick = 1;
+                    flagStart = 1;
+                //}
                 break;
             }
         }
@@ -248,8 +248,10 @@ public class customView extends View
         if(ballHit(wallObj) || ballHit(wallObj2))
         {
             flagGameOver = 1;
+            //flagEnd=1;
             gameEnd();
-            flagClick=0;
+
+
         }
         if(ballObj.y<=3*(yCanvas/8))
         {
@@ -269,30 +271,25 @@ public class customView extends View
 
     private void moveWall()
     {
-        if(wallObj.rWall.right<0)
-        {
-            //wallObj.rWall.left = xCanvas;
-            //wallObj.rWall.right = wallObj.rWall.left + wallObj.width;
-            wallObj.resetWall(wallObj2.rWall.left,1);
-        }
 
-        else
-        {
-            wallObj.rWall.left-=xDeltaWall;
-            wallObj.rWall.right-=xDeltaWall;
-        }
+            if (wallObj.rWall.right < 0) {
+                //wallObj.rWall.left = xCanvas;
+                //wallObj.rWall.right = wallObj.rWall.left + wallObj.width;
+                wallObj.resetWall(wallObj2.rWall.left, 1);
+            } else {
+                wallObj.rWall.left -= xDeltaWall;
+                wallObj.rWall.right -= xDeltaWall;
+            }
 
-        if(wallObj2.rWall.right<0)
-        {
-            //wallObj2.rWall.left = xCanvas;
-            //wallObj2.rWall.right = wallObj.rWall.left + wallObj.width;
-            wallObj2.resetWall(wallObj.rWall.left, 2);
-        }
-        else
-        {
-            wallObj2.rWall.left-=xDeltaWall;
-            wallObj2.rWall.right-=xDeltaWall;
-        }
+            if (wallObj2.rWall.right < 0) {
+                //wallObj2.rWall.left = xCanvas;
+                //wallObj2.rWall.right = wallObj.rWall.left + wallObj.width;
+                wallObj2.resetWall(wallObj.rWall.left, 2);
+            } else {
+                wallObj2.rWall.left -= xDeltaWall;
+                wallObj2.rWall.right -= xDeltaWall;
+            }
+
         invalidate();
     }
 
@@ -309,31 +306,37 @@ public class customView extends View
     }
 
     //SHow respective image based on if user lost or won, and explode the image
-    private void endGame()
+    private void explodeGame()
     {
-      /*  Rect rect = new Rect(Integer.valueOf((int) (board.boardRect.left+50)), Integer.valueOf((int) (board.boardRect.bottom+50)), Integer.valueOf((int) (xCanvas-50)), Integer.valueOf((int) (yCanvas-100)));
-        if((flagClickMine==1)) {
-            mCustomImage = getResources().getDrawable(R.drawable.oops);
-        }
-        else{
-            mCustomImage = getResources().getDrawable(R.drawable.congrats);
-        }
+        int xc=Math.round(xCanvas)/50;
+        int yc=Math.round(yCanvas)/50;
+        Rect rect = new Rect(xc*20,yc*20, xc*30,yc*30);
+
+        //Integer.parseInt(xCanvas.toString()) ,Integer.parseInt(xCanvas.toString()));
+
+        mCustomImage = getResources().getDrawable(R.drawable.congrats);
+
+
 
         mCustomImage.setBounds(rect);
-        mCustomImage.draw(mcanvas);
+        mCustomImage.draw(mCanvas);
 
         if(flagEnd>=1){
-            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.oops);
-            RectF rectF = board.boardRect;
+            Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.congrats);
+
+            RectF rectF = new RectF(xc*5,yc*5,xc*50,yc*50);
+
             rectF.round(rect);
             final ExplosionField explosionField = ExplosionField.attach2Window((Activity) getContext());
             explosionField.explode(bm, rect, 200, 7000);
         }
-        if(flagEnd==7) {
+        if(flagEnd>=100) {
+            //updateView=0;
             Intent intentCanva = new Intent((Activity) getContext(), MainActivity.class);
             intentCanva.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
             getContext().startActivity(intentCanva);
-        }*/
+        }
     }
 
     private void drawPic(Rect rect)
@@ -487,10 +490,13 @@ public class customView extends View
 
     public void gameEnd()
     {
+        playSound(1);
+       // flagEnd=1;
         storeScore();
-        Toast toast;
-        toast = Toast.makeText(getContext(), "Chumo ball hit:", Toast.LENGTH_SHORT);
-        toast.show();
+       // explode Game();
+       // Toast toast;
+       // toast = Toast.makeText(getContext(), "Chumo ball hit:", Toast.LENGTH_SHORT);
+       // toast.show();
     }
 
     public void debugCanvas()
@@ -501,7 +507,7 @@ public class customView extends View
         mCanvas.drawText(String.valueOf(wallObj.rWall.left), 200, 200, paint);
         mCanvas.drawText(String.valueOf(wallObj2.rWall.left), 100, 300, paint);*/
 
-        Log.d("debug", String.valueOf(wallObj.rWall.left) + " ," +String.valueOf(wallObj2.rWall.left));
+        Log.d("debug", String.valueOf(flagEnd) + " ," +String.valueOf(flagGameOver));
 
         //mcanvas.drawText(String.valueOf(xRunStart), 100, 100, paint);
         //mcanvas.drawText(String.valueOf(yRunStart), 200, 100, paint);
@@ -515,20 +521,20 @@ public class customView extends View
     private void storeScore()
     {
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("MySharedPref", MODE_PRIVATE);
-        Integer highScore;
+        Float highScore;
 
-        List<Integer> scoreList = new ArrayList<Integer>();
+        List<Float> scoreList = new ArrayList<Float>();
         for(int i=0; i<5; i++)
         {
-            highScore = Integer.parseInt(sharedPreferences.getString("Score" + String.valueOf(i), "0"));
+            highScore = Float.parseFloat(sharedPreferences.getString("Score" + String.valueOf(i), "0"));
             scoreList.add(highScore);
         }
-        score = secondsPassed/10;
+        score = secondsPassed/10f;
         scoreList.add(score);
         Collections.sort(scoreList);
 
         SharedPreferences.Editor myEdit = sharedPreferences.edit();
-        for(int i = 5;i>0; i--)
+        for(int i=5; i>=1; i--)
             myEdit.putString("Score" +String.valueOf(i) , String.valueOf(scoreList.get(i)));
         myEdit.commit();
     }

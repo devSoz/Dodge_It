@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -52,6 +53,12 @@ public class Canva extends AppCompatActivity
         Intent intent = new Intent(this,MainActivity.class);// New activity
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         this.startActivity(intent);
+    }
+
+
+    public void onBackPressed(){
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
     }
 
 
