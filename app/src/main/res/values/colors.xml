@@ -9,7 +9,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>/
     <color name="white">#FFFFFFFF</color>
-    <color name="foregnd">#00FFF7</color>
+    <color name="clrGameLine">#8A8A8A</color>
     <color name="sliderclr">#00C5BF</color>
     <color name="watermark">#5D8585</color>
     <color name="txtClr">#8B9B9A</color>
@@ -18,4 +18,7 @@
     <color name="clr1">#FF015E</color>
     <color name="clr2">#006A02</color>
     <color name="ball">#00FFF7</color>
+    <color name="clrWall1">#F69AB9</color>
+    <color name="clrWall2">#EB3674</color>
+    <color name="clrWall3">#EB51D9</color>
 </resources>

@@ -17,20 +17,25 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity
 {
+    //private List<Integer> scoreList = new ArrayList<Integer>();
+    private List<String> strTime = new ArrayList<String>();
+    private List<TextView> txtScore = new ArrayList<TextView>();
+    private List<Integer> resCol;
 
-    public Integer level, mode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
         clickListener();
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        Log.d("Main", String.valueOf(metrics.heightPixels));
-        Log.d("Main", String.valueOf(metrics.widthPixels));
+        resCol = new ArrayList<Integer>();
+
         showScore();
     }
 
@@ -46,9 +51,24 @@ public class MainActivity extends AppCompatActivity
     {
         SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref",MODE_PRIVATE);
         Integer highScore;
-        highScore = Integer.parseInt(sharedPreferences.getString("highScore","0")) ;
-        TextView score = (TextView) findViewById(R.id.txtScore);
-        score.setText(String.valueOf(highScore));
+        resCol.add(R.id.txtScore1);
+        resCol.add(R.id.txtScore2);
+        resCol.add(R.id.txtScore3);
+        resCol.add(R.id.txtScore4);
+        resCol.add(R.id.txtScore5);
+
+        for(int i = 0;i<=4; i++)
+        {
+            highScore = Integer.parseInt(sharedPreferences.getString("Score" + String.valueOf(i), "0"));
+            //scoreList.add(highScore);
+            txtScore.add(findViewById(resCol.get(i)));
+
+            int min = (int) (highScore / 60);
+            int sec = (int) ((highScore) % 60);
+            txtScore.get(i).setText(String.format ("%02d", min) + ":" + String.format ("%02d", sec) +"   " + String.valueOf(highScore) );
+        }
+
+
     }
 
 
@@ -62,8 +82,8 @@ public class MainActivity extends AppCompatActivity
             {
                 //getLevel();
                 Intent intentCanva = new Intent(MainActivity.this, Canva.class);
-                intentCanva.putExtra("level", level);
-                intentCanva.putExtra("mode", mode);
+                //intentCanva.putExtra("level", level);
+                //intentCanva.putExtra("mode", mode);
                 startActivity(intentCanva);
             }
         });
@@ -78,30 +98,6 @@ public class MainActivity extends AppCompatActivity
                 alertShow(alertText1);
             }
         });
-    }
-
-
-    public void getLevel()
-    {
-        RadioGroup rg = (RadioGroup) findViewById(R.id.rg1);
-        int selected = rg.getCheckedRadioButtonId();
-        RadioButton selectedBtn = (RadioButton) findViewById(selected);
-        String strSelected = selectedBtn.getText().toString();
-
-        if(strSelected.equals("One Player"))
-            mode = 1;
-        else
-            mode = 2;
-
-        rg = (RadioGroup) findViewById(R.id.rg2);
-        selected = rg.getCheckedRadioButtonId();
-        selectedBtn = (RadioButton) findViewById(selected);
-        strSelected = selectedBtn.getText().toString();
-
-        if(strSelected.equals("Easy"))
-            level = 1;
-        else
-            level = 3;
     }
 
     private void alertShow(StringBuilder alertText)

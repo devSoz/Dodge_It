@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +26,9 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -32,17 +36,18 @@ import static android.content.Context.MODE_PRIVATE;
 public class customView extends View
 {
     private Canvas mCanvas;
-    private Float xRunStart, yRunStart, ballSlope, xCanvas, yCanvas, xWall, yWall,yBottom;
+    private Float xCanvas, yCanvas, xWall, yWall,yBottom, speedWall;
     private Float xDeltaWall = Float.valueOf(20), yDeltaWall = Float.valueOf(10), vX, vX2, vMid;
     private Boolean updateView=false;
     private SoundPool soundPool;
     private RectF endRect;
-    private Integer interval = 40, score, flagClick = 0, flagUp=1, flagStart=0, velocity=25, secondsPassed=0;
+    private Integer interval = 25, score, flagClick = 0, flagUp=1, flagStart=0, velocity=35, secondsPassed=0;
     private Ball ballObj;
-    private Integer cnt=0, flagGameOver = 0;
+    private Integer cnt=0, flagGameOver = 0, flagSpeedReset=0, timerCount=0;
+    private int min, sec;
     private Wall wallObj, wallObj2;
     private Drawable mCustomImage;
-    private Paint paint;
+    private Paint paintWall, paintBall, paintLine;
 
 
     private class UpdateViewRunnable implements Runnable {
@@ -52,8 +57,11 @@ public class customView extends View
             if(updateView) {
 
                 if(flagStart==1) {
-                    secondsPassed++;
+                    //secondsPassed++;
+                    timerCount++;
                     moveWall();
+                    //if(timerCount%40==0)
+
                 }
                 postDelayed(this, interval);
             }
@@ -158,43 +166,58 @@ public class customView extends View
         mCanvas.drawColor(getResources().getColor(R.color.backgnd));
         //Paint paint = new Paint();
 
-        paint = new Paint();
-        paint.setColor(Color.WHITE);
-        paint.setAntiAlias(true);
+        //paintWall.setColor(Color.WHITE);
+        //paintWall.setAntiAlias(true);
         if(ballObj==null)
         {
+            paintWall = new Paint();
+            paintBall = new Paint();
+            paintLine = new Paint();
             setDefault();
             ballObj = new Ball(xCanvas, yCanvas);
-            paint.setTextSize(50);
-            mCanvas.drawText(String.valueOf("Click to start"), xCanvas/3, yCanvas/2, paint);
+            paintLine.setColor(getResources().getColor(R.color.clrGameLine));
+            paintLine.setTextSize(50);
+            mCanvas.drawText(String.valueOf("Click to start"), xCanvas/3, yCanvas/2, paintLine);
+        }
+
+        if(secondsPassed%5==0)
+        {
+            speedReset();
         }
         if(flagStart==1) {
             if (wallObj == null ) {
-                wallObj = new Wall(vX, vX + vMid);
-                wallObj2 = new Wall(vX2, vX2 + vMid);
+                wallObj = new Wall(vX, vX + vMid, 1);
+                wallObj2 = new Wall(vX2, vX2 + vMid, 2);
                 //   wallObj2 = new Wall(xCanvas, yCanvas);
             }
-            mCanvas.drawRect(wallObj.rWall, paint);
-            mCanvas.drawRect(wallObj2.rWall, paint);
-            paint.setStyle(Paint.Style.FILL_AND_STROKE);
+            mCanvas.drawRect(wallObj.rWall, paintWall);
+            mCanvas.drawRect(wallObj2.rWall, paintWall);
+
+            paintBall.setStyle(Paint.Style.FILL_AND_STROKE);
+            paintBall.setColor(getResources().getColor(R.color.ball));
             if(flagClick==1)
             {
                 moveBall();
-                mCanvas.drawCircle(ballObj.x, ballObj.y, ballObj.radius, paint);
+                mCanvas.drawCircle(ballObj.x, ballObj.y, ballObj.radius, paintBall);
             }
             else {
                 if(wallObj.rWall.contains(ballObj.x+ballObj.radius, ballObj.y))
                 {
                     gameEnd();
                 }
-                mCanvas.drawCircle(ballObj.x, ballObj.y, ballObj.radius, paint);
+                mCanvas.drawCircle(ballObj.x, ballObj.y, ballObj.radius, paintBall);
             }
+            paintLine.setColor(getResources().getColor(R.color.clrGameLine));
+            paintLine.setStyle(Paint.Style.STROKE);
+            paintLine.setStrokeWidth(5f);
+            setTimer();
+            mCanvas.drawText(String.format ("%02d", min) + ":" + String.format ("%02d", sec) + "      Score : " +String.format("%.1f", secondsPassed*0.1) , (xCanvas - xCanvas/2), 50, paintLine);
         }
 
-        paint.setColor(getResources().getColor(R.color.foregnd));
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(20f);
-        mCanvas.drawLine(0,yBottom+15,xCanvas,yBottom+15,paint);
+        paintLine.setColor(getResources().getColor(R.color.clrGameLine));
+        paintLine.setStyle(Paint.Style.STROKE);
+        paintLine.setStrokeWidth(20f);
+        mCanvas.drawLine(0,yBottom+15, xCanvas,yBottom+15, paintLine);
 
         //debugCanvas();
     }
@@ -215,8 +238,7 @@ public class customView extends View
             }
         }
 
-            postInvalidate();
-
+        postInvalidate();
         return true;
     }
 
@@ -243,8 +265,6 @@ public class customView extends View
         }
         else
             ballObj.y-=velocity;
-
-
     }
 
     private void moveWall()
@@ -253,7 +273,7 @@ public class customView extends View
         {
             //wallObj.rWall.left = xCanvas;
             //wallObj.rWall.right = wallObj.rWall.left + wallObj.width;
-            wallObj.resetWall();
+            wallObj.resetWall(wallObj2.rWall.left,1);
         }
 
         else
@@ -266,7 +286,7 @@ public class customView extends View
         {
             //wallObj2.rWall.left = xCanvas;
             //wallObj2.rWall.right = wallObj.rWall.left + wallObj.width;
-            wallObj2.resetWall();
+            wallObj2.resetWall(wallObj.rWall.left, 2);
         }
         else
         {
@@ -278,12 +298,14 @@ public class customView extends View
 
     public void setTimer()
     {
-        paint.setColor(Color.WHITE);
-        paint.setTypeface(Typeface.create("Odyssey", Typeface.NORMAL));
-        int min = (int) (secondsPassed / 60);
-        int sec = (int) ((secondsPassed) % 60);
-        paint.setTextSize(60);
-     //   mCanvas.drawText(String.format ("%02d", min) + ":" + String.format ("%02d", sec), (xCanvas - 2 * board.tileSize+10), board.boardRect.top-25, paint2);
+        paintLine.setColor(Color.WHITE);
+        paintLine.setTypeface(Typeface.create("Odyssey", Typeface.NORMAL));
+        if(timerCount%40==0)
+            secondsPassed++;
+        min = (int) (secondsPassed / 60);
+        sec = (int) ((secondsPassed) % 60);
+        paintLine.setTextSize(45);
+        //mCanvas.drawText(String.format ("%02d", min) + ":" + String.format ("%02d", sec) + "      Score : " + secondsPassed , (xCanvas - xCanvas/2), 50, paintLine);
     }
 
     //SHow respective image based on if user lost or won, and explode the image
@@ -343,35 +365,86 @@ public class customView extends View
     private class Wall
     {
         Integer width;
-        Integer height;
+        Integer height, speed;
         RectF rWall;
-        Float x1, x2;
+        Float x1;
+        Float x2;
 
-        public Wall(Float x1, Float x2)
+        public Wall(Float x1, Float x2, Integer t)
         {
             this.height = 200;
             this.width = 50;
             this.x1 = x1;
             this.x2 = x2;
             rWall = new RectF();
-            resetWall();
+
             /*
             rWall.top = yBottom-this.height;
             rWall.bottom = rWall.top + this.height;
             rWall.left = xCanvas;
             rWall.right = rWall.left + this.width;*/
+            Random random = new Random();
+            if(t==1) {
+                this.x1 = xCanvas;
+                this.x2 = xCanvas+500;
+            }
+            if(t==2) {
+                this.x1 = xCanvas+1000;
+                this.x2 = xCanvas+1500;
+            }
+            rWall.left = random.nextInt((int)(this.x2 - this.x1))+this.x1;
+            //this.speed = random.nextInt((int)(25 - 15))+15;
+            this.width = random.nextInt (130 - 50)+50;
+            this.height = random.nextInt (200 - 100)+100;
+            Integer temp = random.nextInt(2-0)+0;
+            if(temp==0) {
+                paintWall.setColor(getResources().getColor(R.color.clrWall1));
+                paintWall.setAntiAlias(true);
+            }
+            else
+            {
+                paintWall.setColor(getResources().getColor(R.color.clrWall2));
+                paintWall.setAntiAlias(true);
+            }
+            Log.d("debug random", String.valueOf(rWall.left)+ ", "+this.x1+", "+ this.x2 +"   "+ t);
+            rWall.right = rWall.left + this.width;
+            rWall.top = yBottom-this.height;
+            rWall.bottom = rWall.top + this.height;
 
-            Paint paint = new Paint();
-            paint.setColor(Color.WHITE);
-            mCanvas.drawRect(rWall, paint);
+
+            mCanvas.drawRect(rWall, paintWall);
         }
 
-        public void resetWall()
+        public void resetWall(Float xtemp, Integer t)
         {
             Random random = new Random();
+            this.x1 = xCanvas;
+            this.x2 = (Float.parseFloat("1.8")*xCanvas);
+         //   if(xtemp-this.rWall.left<1000)
+            Float xy=xCanvas+(xtemp *Float.parseFloat( "0.5"));
+            this.width = random.nextInt (130 - 50)+50;
+            this.height = random.nextInt (200 - 100)+100;
+            if(xy+this.width>(x2))
+                xy=x2-this.width;
+            this.x1=xy;
             rWall.left = random.nextInt((int)(this.x2 - this.x1))+this.x1;
-            this.width = random.nextInt (150 - 50)+50;
-            Log.d("debug random", String.valueOf(rWall.left)+ ", "+this.x1+", "+this.x2);
+
+            Integer temp = random.nextInt(3-0)+0;
+            if(temp==2) {
+                paintWall.setColor(getResources().getColor(R.color.clrWall1));
+                paintWall.setAntiAlias(true);
+            }
+            else if(temp==1)
+            {
+                paintWall.setColor(getResources().getColor(R.color.clrWall2));
+                paintWall.setAntiAlias(true);
+            }
+            else
+            {
+                paintWall.setColor(getResources().getColor(R.color.clrWall3));
+                paintWall.setAntiAlias(true);
+            }
+            Log.d("debug random", String.valueOf(rWall.left)+ ", "+this.x1+", "+ this.x2 +"   "+ xtemp + "   t="+t);
             rWall.right = rWall.left + this.width;
             rWall.top = yBottom-this.height;
             rWall.bottom = rWall.top + this.height;
@@ -382,11 +455,12 @@ public class customView extends View
     {
         xCanvas = Float.valueOf(mCanvas.getWidth());
         yCanvas = Float.valueOf(mCanvas.getHeight());
-        vX = xCanvas;
-        vX2 = 3*(xCanvas/2);//7*(xCanvas/4);
-        vMid = Float.valueOf(400);
-        yBottom = yCanvas-(yCanvas/8);
+        vX = xCanvas+600;//6*(xCanvas/5);
+        vX2 = xCanvas+1800;//8*(xCanvas/5);//7*(xCanvas/4);
+        vMid = Float.valueOf(600); //Float.valueOf(xCanvas/5);
+        yBottom = yCanvas-(yCanvas/4);
         mCanvas.drawColor(getResources().getColor(R.color.backgnd));
+
 
         //xRunStart = xCanvas/2;
         //yRunStart = yCanvas/2;
@@ -413,6 +487,7 @@ public class customView extends View
 
     public void gameEnd()
     {
+        storeScore();
         Toast toast;
         toast = Toast.makeText(getContext(), "Chumo ball hit:", Toast.LENGTH_SHORT);
         toast.show();
@@ -420,11 +495,11 @@ public class customView extends View
 
     public void debugCanvas()
     {
-        Paint paint = new Paint();
+       /* Paint paint = new Paint();
         paint.setColor(Color.WHITE);
         paint.setTextSize(50);
         mCanvas.drawText(String.valueOf(wallObj.rWall.left), 200, 200, paint);
-        mCanvas.drawText(String.valueOf(wallObj2.rWall.left), 100, 300, paint);
+        mCanvas.drawText(String.valueOf(wallObj2.rWall.left), 100, 300, paint);*/
 
         Log.d("debug", String.valueOf(wallObj.rWall.left) + " ," +String.valueOf(wallObj2.rWall.left));
 
@@ -435,18 +510,32 @@ public class customView extends View
         //mcanvas.drawText(String.valueOf(yDelta), 200, 400, paint);
     }
 
-    //stores the highest score in shared preferences to show in main screen
-    //This function is called when the balls misses
+    //stores top 5 highest scores in shared preferences to show in leaderboard
+    //This function is called when the balls hits the wall
     private void storeScore()
     {
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("MySharedPref", MODE_PRIVATE);
         Integer highScore;
-        highScore = Integer.parseInt(sharedPreferences.getString("highScore", "0"));
 
-        if (score > highScore) {
-            SharedPreferences.Editor myEdit = sharedPreferences.edit();
-            myEdit.putString("highScore", String.valueOf(score));
-            myEdit.commit();
+        List<Integer> scoreList = new ArrayList<Integer>();
+        for(int i=0; i<5; i++)
+        {
+            highScore = Integer.parseInt(sharedPreferences.getString("Score" + String.valueOf(i), "0"));
+            scoreList.add(highScore);
         }
+        score = secondsPassed/10;
+        scoreList.add(score);
+        Collections.sort(scoreList);
+
+        SharedPreferences.Editor myEdit = sharedPreferences.edit();
+        for(int i = 5;i>0; i--)
+            myEdit.putString("Score" +String.valueOf(i) , String.valueOf(scoreList.get(i)));
+        myEdit.commit();
+    }
+
+    public void speedReset()
+    {
+        Random random = new Random();
+        xDeltaWall = Float.valueOf(random.nextInt((int)(25 - 15))+15);
     }
 }
