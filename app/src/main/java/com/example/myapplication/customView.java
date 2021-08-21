@@ -116,7 +116,6 @@ public class customView extends View
 
     }
 
-
     //Enable sound when hit on wall or slider or when game is over
     public void soundEnable(Context context){
         if (Build.VERSION.SDK_INT
@@ -137,22 +136,14 @@ public class customView extends View
         else {
             soundPool= new SoundPool(3, AudioManager.STREAM_MUSIC,0);
         }
-
-
-
         //beep sound for hit and game over
         endSound = soundPool.load(context, R.raw.beep2,1);
-
-
-
     }
 
     //play different sound based on the action
     public void playSound(int i)
     {
-
-                soundPool.play(endSound, 1, 1, 0, 0, 1);
-
+        soundPool.play(endSound, 1, 1, 0, 0, 1);
     }
 
     @Override
@@ -199,7 +190,7 @@ public class customView extends View
                 mCanvas.drawCircle(ballObj.x, ballObj.y, ballObj.radius, paintBall);
             }
             else {
-                if(wallObj.rWall.contains(ballObj.x+ballObj.radius, ballObj.y))
+                if(wallObj.rWall.contains(ballObj.x+ballObj.radius, ballObj.y)||(wallObj2.rWall.contains(ballObj.x+ballObj.radius, ballObj.y)))
                 {
                     gameEnd();
                 }
@@ -250,10 +241,8 @@ public class customView extends View
             flagGameOver = 1;
             //flagEnd=1;
             gameEnd();
-
-
         }
-        if(ballObj.y<=3*(yCanvas/8))
+        if(ballObj.y<=(yCanvas/5))
         {
             flagUp=0;
         }
@@ -473,18 +462,21 @@ public class customView extends View
 
     private Boolean ballHit(Wall wall)
     {
-        Float cX = Math.abs(ballObj.x - wallObj.rWall.left);
-        Float cY = Math.abs(ballObj.y - wallObj.rWall.top);
+        Float cX = Math.abs(ballObj.x - wall.rWall.left);
+        Float cY = Math.abs(ballObj.y - wall.rWall.top);
 
-        if (cX > (wallObj.width/2 + ballObj.radius)) { return false; }
-        if (cY > (wallObj.height/2 + ballObj.radius)) { return false; }
+        if (cX > (wall.width/2 + ballObj.radius)) { return false; }
+        if (cY > (wall.height/2 + ballObj.radius)) { return false; }
 
-        if (cX <= (wallObj.width/2)) { return true; }
-        if (cY <= (wallObj.height/2)) { return true; }
+        if (cX <= (wall.width/2)) { return true; }
+        if (cY <= (wall.height/2)) { return true; }
 
-        double distance = Math.pow((cX-wallObj.width/2),2) + Math.pow((cY-wallObj.height/2), 2);
-        if(wallObj.rWall.contains(ballObj.x+ballObj.radius, ballObj.y))
+        double distance = Math.pow((cX-wall.width/2),2) + Math.pow((cY-wall.height/2), 2);
+        if((wallObj.rWall.contains(ballObj.x-ballObj.radius, ballObj.y+ballObj.radius))||(wallObj2.rWall.contains(ballObj.x-ballObj.radius, ballObj.y+ballObj.radius)))
             return true;
+        //if((wallObj2.rWall.contains(ballObj.x+ballObj.radius, ballObj.y))||(wallObj2.rWall.contains(ballObj.x, ballObj.y+ballObj.radius)))
+           // return true;
+
         return (distance <= (Math.pow(ballObj.radius, 2)));
     }
 
