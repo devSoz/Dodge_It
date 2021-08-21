@@ -57,17 +57,18 @@ public class customView extends View
         {
             //
             //if(flagEnd>0) {
-                flagEnd++;
+             //   flagEnd++;
                // explodeGame();
 
             //}
             if(updateView) {
                 if(flagStart==1) {
                     //secondsPassed++;
-                    //if(flagEnd==0) {
+                    if(flagEnd==0) {
                         timerCount++;
-                        if(ballObj != null)
+                        if (ballObj != null)
                             moveWall();
+                    }
                     //}
 
                 }
@@ -325,7 +326,7 @@ public class customView extends View
             Intent intentCanva = new Intent((Activity) getContext(), MainActivity.class);
             intentCanva.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-            getContext().startActivity(intentCanva);
+            //getContext().startActivity(intentCanva);
             ((Activity) getContext()).finish();
         }
     }
@@ -488,11 +489,10 @@ public class customView extends View
         flagEnd=1;
         storeScore();
        // explode Game();
-        Intent intentCanva = new Intent(getContext(), Canva.class);
-        //intentCanva.putExtra("level", level);
-        //intentCanva.putExtra("mode", mode);
+        Intent intentCanva = new Intent((Activity) getContext(), MainActivity.class);
+        intentCanva.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        ((Activity) getContext()).finish();
         getContext().startActivity(intentCanva);
-
     }
 
     public void debugCanvas()

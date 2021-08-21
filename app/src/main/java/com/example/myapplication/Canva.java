@@ -58,6 +58,8 @@ public class Canva extends AppCompatActivity
 
     public void onBackPressed(){
         Intent i = new Intent(this, MainActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        finish();
         startActivity(i);
     }
 

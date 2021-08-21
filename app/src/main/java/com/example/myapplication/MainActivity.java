@@ -2,16 +2,13 @@ package com.example.myapplication;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Html;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -21,8 +18,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -81,9 +76,10 @@ public class MainActivity extends AppCompatActivity
 
                 txtScore.add(findViewById(resCol.get(j)));
             if(highScore!=0) {
-                int min = (int) (highScore / 6);
-                int sec = (int) ((highScore) % 6);
-                txtScore.get(j).setText("Time taken: " + String.format("%02d", min) + ":" + String.format("%02d", sec) + ",  Score:" + String.valueOf(highScore));
+                float seconds = highScore*10;
+                int min = (int) (seconds / 60);
+                int sec = (int) (seconds % 60);
+                txtScore.get(j).setText("Time taken: " + String.format("%02d", min) + ":" + String.format("%02d", sec) + ",  Score:" + String.format("%.2f", highScore));
                 Log.d("mainscreen","from canvas " + highScore );
             }
             j++;
@@ -110,10 +106,10 @@ public class MainActivity extends AppCompatActivity
                 //getLevel();
                 int temp=0;
                 Intent intentCanva = new Intent(MainActivity.this, Canva.class);
-
+                finish();
                 //intentCanva.putExtra("mode", mode);
                 startActivity(intentCanva);
-                finish();
+
             }
         });
 
